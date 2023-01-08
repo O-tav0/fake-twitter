@@ -11,13 +11,8 @@ class TelaInicial extends StatefulWidget {
 
 class _TelaInicialState extends State<TelaInicial> {
 
-  _abrirModalCriarConta() {
-    showModalBottomSheet(
-      context: context,
-      builder: (_) {
-        return FormularioCriarConta();
-      }
-    );
+  _navegarFormCriarConta() {
+    Navigator.pushNamed(context, '/criarConta');
   }
 
   @override
@@ -41,7 +36,7 @@ class _TelaInicialState extends State<TelaInicial> {
                 width: 170,
                 height: 50,
                 child: InkWell(
-                  onTap: () => _abrirModalCriarConta(),
+                  onTap: () => _navegarFormCriarConta(),
                   splashColor: Colors.grey.shade50,
                   customBorder: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),

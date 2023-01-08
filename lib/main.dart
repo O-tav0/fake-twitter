@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:twitter/Cores/cores.dart';
+import 'package:twitter/components/formulario_criar_conta.dart';
 import 'package:twitter/components/tela_inicial.dart';
 
 void main() {
@@ -15,12 +16,16 @@ class MyApp extends StatelessWidget {
     final ThemeData tema = ThemeData();
  
     return MaterialApp(
-      home: MyHomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) =>  MyHomePage(),
+        '/criarConta': (context) => FormularioCriarConta(),
+      },
       theme: tema.copyWith(
         colorScheme: tema.colorScheme.copyWith(
           primary: Cores.amareloPrincipal,
         ),
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: Cores.amareloPrincipal
         ),
       ),
