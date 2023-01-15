@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +21,8 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
   final nomeUsuarioController = TextEditingController();
   final emailController = TextEditingController();
   final senhaController = TextEditingController();
-  final paisController = TextEditingController();
   DateTime? dataNascimento;
-
+  String paisSelecionado = "";
   XFile? _image;
   final picker = ImagePicker();
 
@@ -41,10 +41,12 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
         .add(novoUsuario.toJson())
         .then((value) => QuickAlert.show(
             confirmBtnText: 'OK',
+            title: 'Sucesso',
             context: context,
             type: QuickAlertType.success,
             text: 'Usuário registrado com sucesso!'))
         .catchError((error) => QuickAlert.show(
+            title: 'Erro',
             confirmBtnText: 'OK',
             context: context,
             type: QuickAlertType.error,
@@ -58,14 +60,19 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
         emailController.value.text,
         senhaController.value.text,
         dataNascimento.toString(),
-        paisController.value.text,
+        paisSelecionado,
         idUsuarioFirebase);
     return novoUsuario;
   }
 
+  void _retornarTelaInicial() {
+    Navigator.pushNamed(context, '/');
+  }
+
   void _fazerUploadImagemFirebase(UserCredential userCredential) async {
     final storageRef = FirebaseStorage.instance.ref();
-    final fotoPerfilRef = storageRef.child("/${userCredential.user!.uid}/fotoPerfil.jpg");
+    final fotoPerfilRef =
+        storageRef.child("/${userCredential.user!.uid}/fotoPerfil.jpg");
 
     await fotoPerfilRef.putFile(File(_image!.path));
   }
@@ -79,6 +86,7 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
           .then((userCredential) {
         _adicionarUsuarioFirebase(userCredential);
         _fazerUploadImagemFirebase(userCredential);
+        _retornarTelaInicial();
       });
       return userCredential;
     } on FirebaseAuthException catch (e) {
@@ -194,11 +202,21 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
             const SizedBox(
               height: 20,
             ),
-            TextField(
-                controller: paisController,
-                decoration: const InputDecoration(
-                  labelText: 'País',
-                )),
+            InkWell(
+              onTap: () => showCountryPicker(
+                context: context,// optional. Shows phone code before the country name.
+                onSelect: (Country country) {
+                  paisSelecionado = country.name;
+                },
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  const Text('País'),
+                  const Icon(Icons.arrow_drop_down_sharp),
+                ],
+              ),
+            ),
             const SizedBox(
               height: 20,
             ),
