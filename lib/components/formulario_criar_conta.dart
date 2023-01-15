@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quickalert/quickalert.dart';
@@ -32,11 +33,10 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
     });
   }
 
-  Future<void> adicionarUsuarioFirebase(UserCredential userCredential) {
+  Future<void> _adicionarUsuarioFirebase(UserCredential userCredential) {
     CollectionReference usuarios =
         FirebaseFirestore.instance.collection('usuarios');
     Usuario novoUsuario = _preencheNovoUsuario(userCredential.user!.uid);
-    print("chamou addUser");
     return usuarios
         .add(novoUsuario.toJson())
         .then((value) => QuickAlert.show(
@@ -63,6 +63,13 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
     return novoUsuario;
   }
 
+  void _fazerUploadImagemFirebase(UserCredential userCredential) async {
+    final storageRef = FirebaseStorage.instance.ref();
+    final fotoPerfilRef = storageRef.child("/${userCredential.user!.uid}/fotoPerfil.jpg");
+
+    await fotoPerfilRef.putFile(File(_image!.path));
+  }
+
   Future<UserCredential?> _criarNovoUsuarioComEmailESenha() async {
     try {
       UserCredential? userCredential = await FirebaseAuth.instance
@@ -70,7 +77,8 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
               email: emailController.value.text,
               password: senhaController.value.text)
           .then((userCredential) {
-        adicionarUsuarioFirebase(userCredential);
+        _adicionarUsuarioFirebase(userCredential);
+        _fazerUploadImagemFirebase(userCredential);
       });
       return userCredential;
     } on FirebaseAuthException catch (e) {
