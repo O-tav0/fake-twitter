@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:twitter/Cores/cores.dart';
 import 'package:twitter/components/formulario_criar_conta.dart';
+import 'package:twitter/components/formulario_fazer_login.dart';
 
 class TelaInicial extends StatefulWidget {
 
@@ -13,6 +14,18 @@ class _TelaInicialState extends State<TelaInicial> {
 
   _navegarFormCriarConta() {
     Navigator.pushNamed(context, '/criarConta');
+  }
+
+  _abrirModalLogin(BuildContext context) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) => Wrap(
+        children: [
+          FormularioLogin()
+          ],
+      )
+    );
   }
 
   @override
@@ -62,7 +75,7 @@ class _TelaInicialState extends State<TelaInicial> {
               width: 170,
               height: 50,
               child: InkWell(
-                onTap: () => {},
+                onTap: () => _abrirModalLogin(context),
                 splashColor: Colors.grey.shade50,
                 customBorder: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(40),

@@ -77,7 +77,7 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
     await fotoPerfilRef.putFile(File(_image!.path));
   }
 
-  Future<UserCredential?> _criarNovoUsuarioComEmailESenha() async {
+  void _criarNovoUsuarioComEmailESenha() async {
     try {
       UserCredential? userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -88,7 +88,6 @@ class _FormularioCriarContaState extends State<FormularioCriarConta> {
         _fazerUploadImagemFirebase(userCredential);
         _retornarTelaInicial();
       });
-      return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         QuickAlert.show(
